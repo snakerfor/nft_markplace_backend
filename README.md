@@ -1,6 +1,6 @@
 # NFT Marketplace Backend
 
-基于 Gin 框架构建的 NFT Marketplace 后端 API 示例，采用标准 Go 项目结构。
+基于 Gin 框架构建的 NFT Marketplace 后端 API 工程，采用标准 Go 项目结构。
 
 ## 功能特性
 
