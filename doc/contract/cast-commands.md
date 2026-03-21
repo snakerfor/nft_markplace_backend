@@ -109,10 +109,20 @@ cast send $MARKETPLACE "placeBid(uint256)" 3 \
 
 ```bash
 source .env
-cast call $MARKETPLACE "endAuction(uint256)" 1 \
+cast send $MARKETPLACE "endAuction(uint256)" 3 \
   --private-key $ETH_PRIVATE_KEY \
   --rpc-url $RPC 
 ```
+
+### 3. 提取出价退款
+
+```bash
+source .env
+cast send $MARKETPLACE "withdrawBid(uint256)" 3 \
+  --private-key $ETH_PRIVATE_KEY \
+  --rpc-url $RPC 
+```
+
 
 ### 4. 查询拍卖信息
 

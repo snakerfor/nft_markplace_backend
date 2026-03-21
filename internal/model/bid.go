@@ -24,3 +24,14 @@ type Bid struct {
 func (Bid) TableName() string {
 	return "bids"
 }
+
+// BidResponse 出价记录响应
+type BidResponse struct {
+	ID        uint   `json:"id"`
+	AuctionID string `json:"auctionId"`
+	Bidder    string `json:"bidder"`
+	Amount    string `json:"amount"`
+	UsdValue  string `json:"usdValue"`
+	TxHash    string `json:"txHash"`
+	Timestamp int64  `json:"timestamp"`
+}

@@ -47,3 +47,23 @@ var AuctionStatusValues = AuctionStatus{
 	Ended:     "ended",
 	Cancelled: "cancelled",
 }
+
+// AuctionResponse 拍卖列表响应
+type AuctionResponse struct {
+	AuctionID     string `json:"auctionId"`
+	NftContract   string `json:"nftContract"`
+	TokenID       string `json:"tokenId"`
+	TokenURI      string `json:"tokenUri,omitempty"`
+	NftName       string `json:"nftName,omitempty"`
+	NftImage      string `json:"nftImage,omitempty"`
+	Seller        string `json:"seller"`
+	StartPrice    string `json:"startPrice"`
+	HighestBid    string `json:"highestBid"`
+	HighestBidder string `json:"highestBidder,omitempty"`
+	EndTime       int64  `json:"endTime"`
+	Status        string `json:"status"`
+	BidCount      int    `json:"bidCount"`
+	Winner        string `json:"winner,omitempty"`
+	FinalPrice    string `json:"finalPrice,omitempty"`
+	CreatedAt     int64  `json:"createdAt"`
+}

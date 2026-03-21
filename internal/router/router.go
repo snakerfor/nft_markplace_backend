@@ -9,7 +9,7 @@ import (
 	"nft-marketplace/pkg/response"
 )
 
-func Setup(cfg *config.Config, userHandler *handler.UserHandler) *gin.Engine {
+func Setup(cfg *config.Config, userHandler *handler.UserHandler, auctionHandler *handler.AuctionHandler) *gin.Engine {
 	r := gin.Default()
 
 	// 全局中间件
@@ -28,6 +28,9 @@ func Setup(cfg *config.Config, userHandler *handler.UserHandler) *gin.Engine {
 	{
 		public.POST("/users/register", userHandler.Register)
 		public.POST("/users/login", userHandler.Login)
+
+		// 拍卖相关（公开查询）- 先只注册列表接口
+		public.GET("/auctions", auctionHandler.ListAuctions)
 	}
 
 	// 需要认证的路由

@@ -73,8 +73,13 @@ func main() {
 	userSvc := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userSvc, []byte(cfg.JWT.Secret))
 
+	// Auction 相关初始化
+	auctionRepo := repository.NewAuctionRepository(db)
+	auctionSvc := service.NewAuctionService(auctionRepo)
+	auctionHandler := handler.NewAuctionHandler(auctionSvc)
+
 	// 创建路由
-	r := router.Setup(cfg, userHandler)
+	r := router.Setup(cfg, userHandler, auctionHandler)
 
 	// ========== 启动 HTTP 服务器 ==========
 	// 创建 HTTP 服务器

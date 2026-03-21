@@ -22,9 +22,10 @@ func NewAuctionRepository(db *gorm.DB) *AuctionRepository {
 
 // CreateAuction 创建拍卖记录
 // 类似于 INSERT INTO auctions ...
+// 使用幂等插入，重复的 auction_id 会直接忽略（不会报错）
 func (r *AuctionRepository) CreateAuction(auction *model.Auction) error {
-   return r.db.Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "auction_id"}}, DoNothing: true}).
-          Create(auction).Error
+	return r.db.Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "auction_id"}}, DoNothing: true}).
+		Create(auction).Error
 }
 
 // CreateBid 创建出价记录
@@ -68,16 +69,6 @@ func (r *AuctionRepository) EndAuction(auctionID, winner, finalPrice string) err
 			"winner":      winner,
 			"final_price": finalPriceDecimal,
 		}).Error
-}
-
-// GetAuctionByID 根据 ID 获取拍卖
-func (r *AuctionRepository) GetAuctionByID(auctionID string) (*model.Auction, error) {
-	var auction model.Auction
-	err := r.db.Where("auction_id = ?", auctionID).First(&auction).Error
-	if err != nil {
-		return nil, err
-	}
-	return &auction, nil
 }
 
 // ListAuctions 查询拍卖列表（支持分页、排序、过滤）
@@ -124,54 +115,4 @@ func (r *AuctionRepository) ListAuctions(page, limit int, status, sort, order st
 		Find(&auctions).Error
 
 	return auctions, total, err
-}
-
-// GetBidsByAuctionID 获取拍卖的所有出价记录
-func (r *AuctionRepository) GetBidsByAuctionID(auctionID string, page, limit int) ([]model.Bid, int64, error) {
-	var bids []model.Bid
-	var total int64
-
-	query := r.db.Model(&model.Bid{}).Where("auction_id = ?", auctionID)
-
-	// 统计总数
-	if err := query.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
-
-	// 分页，按时间倒序
-	offset := (page - 1) * limit
-	err := query.
-		Order("timestamp desc").
-		Offset(offset).
-		Limit(limit).
-		Find(&bids).Error
-
-	return bids, total, err
-}
-
-// GetStats 获取平台统计数据
-func (r *AuctionRepository) GetStats() (map[string]interface{}, error) {
-	var totalAuctions int64
-	var activeAuctions int64
-	var totalBids int64
-	var totalUsers int64
-
-	// 拍卖总数
-	r.db.Model(&model.Auction{}).Count(&totalAuctions)
-
-	// 活跃拍卖数
-	r.db.Model(&model.Auction{}).Where("status = ?", model.AuctionStatusValues.Active).Count(&activeAuctions)
-
-	// 出价总数
-	r.db.Model(&model.Bid{}).Count(&totalBids)
-
-	// 独立出价者数量
-	r.db.Model(&model.Bid{}).Distinct("bidder").Count(&totalUsers)
-
-	return map[string]interface{}{
-		"total_auctions":  totalAuctions,
-		"active_auctions": activeAuctions,
-		"total_bids":      totalBids,
-		"total_users":      totalUsers,
-	}, nil
 }
