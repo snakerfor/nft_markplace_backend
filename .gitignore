@@ -23,3 +23,8 @@ go.work
 # OS
 .DS_Store
 Thumbs.db
+
+# Environment variables（包含私钥，不要提交）
+.env
+.env.local
+.env.*.local
