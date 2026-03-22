@@ -116,3 +116,26 @@ func (r *AuctionRepository) ListAuctions(page, limit int, status, sort, order st
 
 	return auctions, total, err
 }
+
+// GetBidsByAuctionID 获取拍卖的所有出价记录
+func (r *AuctionRepository) GetBidsByAuctionID(auctionID string, page, limit int) ([]model.Bid, int64, error) {
+	var bids []model.Bid
+	var total int64
+
+	query := r.db.Model(&model.Bid{}).Where("auction_id = ?", auctionID)
+
+	// 统计总数
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页，按时间倒序
+	offset := (page - 1) * limit
+	err := query.
+		Order("timestamp desc").
+		Offset(offset).
+		Limit(limit).
+		Find(&bids).Error
+
+	return bids, total, err
+}

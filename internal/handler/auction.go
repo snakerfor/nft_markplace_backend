@@ -90,3 +90,42 @@ func toAuctionResponses(auctions []model.Auction) []model.AuctionResponse {
 	}
 	return responses
 }
+
+// GetAuctionBids 获取拍卖的出价历史
+// GET /api/v1/auctions/:id/bids?page=1&limit=20
+func (h *AuctionHandler) GetAuctionBids(c *gin.Context) {
+	auctionID := c.Param("id")
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+
+	bids, total, err := h.auctionSvc.GetBidsByAuctionID(auctionID, page, limit)
+	if err != nil {
+		response.Error(c, 500, "Failed to fetch bids")
+		return
+	}
+
+	response.Success(c, gin.H{
+		"bids": toBidResponses(bids),
+		"pagination": gin.H{
+			"page":  page,
+			"limit": limit,
+			"total": total,
+		},
+	})
+}
+
+func toBidResponses(bids []model.Bid) []model.BidResponse {
+	responses := make([]model.BidResponse, len(bids))
+	for i, bid := range bids {
+		responses[i] = model.BidResponse{
+			ID:        bid.ID,
+			AuctionID: bid.AuctionID,
+			Bidder:    bid.Bidder,
+			Amount:    bid.Amount.String(),
+			UsdValue:  bid.UsdValue.String(),
+			TxHash:    bid.TxHash,
+			Timestamp: bid.Timestamp.Unix(),
+		}
+	}
+	return responses
+}

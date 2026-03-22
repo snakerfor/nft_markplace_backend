@@ -72,6 +72,11 @@ func main() {
 	Test("按创建时间升序", "/auctions?sort=created_at&order=asc")
 	Test("按最高出价降序", "/auctions?sort=highest_bid&order=desc")
 
+	// 2. 查询拍卖出价历史
+	fmt.Println("--- Auction Bids ---")
+	Test("拍卖1出价历史-默认", "/auctions/3/bids")
+	Test("拍卖1出价历史-分页", "/auctions/3/bids?page=1&limit=5")
+
 	// 汇总
 	fmt.Println("========================================")
 	fmt.Printf("  Results: ✅ %d passed, ❌ %d failed\n", passed, failed)

@@ -34,3 +34,15 @@ func (s *AuctionService) ListAuctions(page, limit int, status, sort, order strin
 
 	return s.auctionRepo.ListAuctions(page, limit, status, sort, order)
 }
+
+// GetBidsByAuctionID 获取拍卖的出价历史
+func (s *AuctionService) GetBidsByAuctionID(auctionID string, page, limit int) ([]model.Bid, int64, error) {
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 100 {
+		limit = 20
+	}
+
+	return s.auctionRepo.GetBidsByAuctionID(auctionID, page, limit)
+}

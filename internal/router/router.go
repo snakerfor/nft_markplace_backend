@@ -29,8 +29,10 @@ func Setup(cfg *config.Config, userHandler *handler.UserHandler, auctionHandler 
 		public.POST("/users/register", userHandler.Register)
 		public.POST("/users/login", userHandler.Login)
 
-		// 拍卖相关（公开查询）- 先只注册列表接口
+		// 拍卖相关（公开查询）
 		public.GET("/auctions", auctionHandler.ListAuctions)
+		// 查询某个拍卖的出价历史记录
+		public.GET("/auctions/:id/bids", auctionHandler.GetAuctionBids)
 	}
 
 	// 需要认证的路由
