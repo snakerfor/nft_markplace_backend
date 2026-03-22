@@ -9,7 +9,7 @@ import (
 	"nft-marketplace/pkg/response"
 )
 
-func Setup(cfg *config.Config, userHandler *handler.UserHandler, auctionHandler *handler.AuctionHandler) *gin.Engine {
+func Setup(cfg *config.Config, userHandler *handler.UserHandler, auctionHandler *handler.AuctionHandler, walletHandler *handler.WalletHandler) *gin.Engine {
 	r := gin.Default()
 
 	// 全局中间件
@@ -35,6 +35,9 @@ func Setup(cfg *config.Config, userHandler *handler.UserHandler, auctionHandler 
 		public.GET("/auctions/:id/bids", auctionHandler.GetAuctionBids)
 		// 平台统计数据
 		public.GET("/auctions/stats", auctionHandler.GetStats)
+
+		// 钱包相关
+		public.GET("/wallets/:address/nfts", walletHandler.GetNFTsByOwner)
 	}
 
 	// 需要认证的路由

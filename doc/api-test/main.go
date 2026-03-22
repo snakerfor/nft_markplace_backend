@@ -81,6 +81,10 @@ func main() {
 	fmt.Println("--- Stats ---")
 	Test("平台统计", "/auctions/stats")
 
+	// 4. 钱包 NFT 查询
+	fmt.Println("--- Wallet NFTs ---")
+	Test("钱包NFT列表", "/wallets/0xC7D080A394829BCc94178fF2E80ab1113DEFCfA9/nfts")
+
 	// 汇总
 	fmt.Println("========================================")
 	fmt.Printf("  Results: ✅ %d passed, ❌ %d failed\n", passed, failed)

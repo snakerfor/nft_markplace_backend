@@ -78,8 +78,13 @@ func main() {
 	auctionSvc := service.NewAuctionService(auctionRepo)
 	auctionHandler := handler.NewAuctionHandler(auctionSvc)
 
+	// Wallet 相关初始化（Alchemy NFT API）
+	alchemyClient := ethclient.NewAlchemyClient(cfg.Alchemy.APIKey, cfg.Alchemy.NFTURL)
+	walletSvc := service.NewWalletService(alchemyClient)
+	walletHandler := handler.NewWalletHandler(walletSvc)
+
 	// 创建路由
-	r := router.Setup(cfg, userHandler, auctionHandler)
+	r := router.Setup(cfg, userHandler, auctionHandler, walletHandler)
 
 	// ========== 启动 HTTP 服务器 ==========
 	// 创建 HTTP 服务器

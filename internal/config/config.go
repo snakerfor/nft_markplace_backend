@@ -4,6 +4,7 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
 	JWT      JWTConfig      `mapstructure:"jwt"`
+	Alchemy  AlchemyConfig  `mapstructure:"alchemy"`
 }
 
 type ServerConfig struct {
@@ -25,6 +26,11 @@ type JWTConfig struct {
 	Expire string `mapstructure:"expire"`
 }
 
+type AlchemyConfig struct {
+	APIKey string `mapstructure:"apiKey"`
+	NFTURL string `mapstructure:"nftUrl"`
+}
+
 func Load() *Config {
 	// 简化配置加载，实际应该使用 Viper
 	return &Config{
@@ -43,6 +49,10 @@ func Load() *Config {
 		JWT: JWTConfig{
 			Secret: "your-secret-key-change-in-production",
 			Expire: "24h",
+		},
+		Alchemy: AlchemyConfig{
+			APIKey: "Ek_Cs6Y_4GDC6K-qG5oPYbtEYSvIwty6",
+			NFTURL: "https://eth-sepolia.g.alchemy.com",
 		},
 	}
 }
