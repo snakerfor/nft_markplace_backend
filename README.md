@@ -13,16 +13,16 @@
 ### 拍卖模块
 - ✅ 查询拍卖列表（支持分页、排序、状态过滤）
 - ⏳ 查询拍卖详情
-- ⏳ 查询拍卖出价历史
-- ⏳ 平台统计数据
+- ✅ 查询拍卖出价历史
+- ✅ 平台统计数据
 
 ### 事件监听
-- ✅ 订阅/轮询合约事件（AuctionCreated, BidPlaced, AuctionEnded 等）
+- ✅ 订阅/轮询合约事件（AuctionCreated, BidPlaced, AuctionEnded, BidWithdrawn 等）
 - ✅ 事件幂等处理（防止重复）
 - ✅ 断点续查（网络断开/服务器重启后自动恢复）
 
 ### 外部集成
-- ⏳ Alchemy API（查询钱包 NFT）
+- ✅ Alchemy API（查询钱包 NFT）
 - ⏳ OpenSea API（查询地板价）
 
 ## 项目结构
@@ -34,14 +34,17 @@ NftMarketplaceBackend/
 │       └── main.go              # 程序入口
 ├── internal/                     # 私有包（外部无法引用）
 │   ├── config/                  # 配置加载
-│   ├── ethclient/               # Ethereum 客户端
+│   ├── ethclient/               # Ethereum 客户端 + Alchemy API
+│   │   ├── client.go           # Ethereum RPC 客户端
+│   │   └── alchemy.go          # Alchemy NFT API 客户端
 │   ├── event/                   # 事件监听和处理
 │   │   ├── models.go            # 事件结构体（abi标签映射）
-│   │   ├── listener.go          # 事件轮询监听
+│   │   ├── listener.go         # 事件轮询监听
 │   │   └── processor.go         # 事件处理（写入数据库）
 │   ├── handler/                 # HTTP Handler
 │   │   ├── user.go
-│   │   └── auction.go
+│   │   ├── auction.go
+│   │   └── wallet.go           # 钱包 NFT 查询
 │   ├── middleware/              # 中间件
 │   │   ├── auth.go
 │   │   ├── cors.go
@@ -57,7 +60,8 @@ NftMarketplaceBackend/
 │   │   └── router.go
 │   └── service/                 # 业务逻辑层
 │       ├── user.go
-│       └── auction.go
+│       ├── auction.go
+│       └── wallet.go
 ├── pkg/                         # 公共工具包
 │   ├── errors/                  # 统一错误处理
 │   ├── response/                # 统一响应格式
@@ -76,7 +80,7 @@ NftMarketplaceBackend/
 |------|------|
 | `cmd/server/` | 程序入口点 |
 | `internal/config/` | 配置加载与管理 |
-| `internal/ethclient/` | Ethereum RPC 客户端 |
+| `internal/ethclient/` | Ethereum RPC + Alchemy API |
 | `internal/event/` | 区块链事件监听（轮询 + 处理） |
 | `internal/handler/` | HTTP 处理器 |
 | `internal/middleware/` | Gin 中间件（日志、CORS、认证） |
@@ -92,6 +96,7 @@ NftMarketplaceBackend/
 - **数据库**: SQLite（GORM）
 - **区块链**: Sepolia 测试网（Ethereum）
 - **合约**: NFTMarketplaceV1, NFTCollectionV1, PaymentTokenV1, PriceOracle
+- **外部 API**: Alchemy NFT API
 - **ORM**: GORM v1.25+
 - **认证**: JWT
 
@@ -118,6 +123,24 @@ go run ./cmd/server/main.go
 
 ```bash
 curl "http://localhost:8080/api/v1/auctions?status=active&sort=created_at&order=desc"
+```
+
+#### 查询拍卖出价历史
+
+```bash
+curl "http://localhost:8080/api/v1/auctions/3/bids"
+```
+
+#### 平台统计
+
+```bash
+curl "http://localhost:8080/api/v1/auctions/stats"
+```
+
+#### 查询钱包 NFT
+
+```bash
+curl "http://localhost:8080/api/v1/wallets/0xC7D080A394829BCc94178fF2E80ab1113DEFCfA9/nfts"
 ```
 
 #### 用户注册
@@ -165,9 +188,14 @@ curl http://localhost:8080/health
 | 方法 | 路径 | 说明 | 认证 |
 |------|------|------|------|
 | GET | `/api/v1/auctions` | 查询拍卖列表 | 否 |
-| GET | `/api/v1/auctions/:id` | 获取拍卖详情 | 否 |
 | GET | `/api/v1/auctions/:id/bids` | 获取出价历史 | 否 |
 | GET | `/api/v1/auctions/stats` | 平台统计 | 否 |
+
+### 钱包模块
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
+| GET | `/api/v1/wallets/:address/nfts` | 查询钱包 NFT 列表 | 否 |
 
 ### 系统
 
@@ -182,3 +210,4 @@ curl http://localhost:8080/health
 3. 密码使用 bcrypt 加密存储
 4. 事件监听使用轮询机制，断点续查保证可靠性
 5. 所有 API 返回统一的 JSON 格式
+6. Alchemy API Key 配置在 `internal/config/config.go`
