@@ -46,3 +46,8 @@ func (s *AuctionService) GetBidsByAuctionID(auctionID string, page, limit int) (
 
 	return s.auctionRepo.GetBidsByAuctionID(auctionID, page, limit)
 }
+
+// GetStats 获取平台统计数据
+func (s *AuctionService) GetStats() (map[string]interface{}, error) {
+	return s.auctionRepo.GetStats()
+}

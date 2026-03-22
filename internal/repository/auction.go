@@ -139,3 +139,30 @@ func (r *AuctionRepository) GetBidsByAuctionID(auctionID string, page, limit int
 
 	return bids, total, err
 }
+
+// GetStats 获取平台统计数据
+func (r *AuctionRepository) GetStats() (map[string]interface{}, error) {
+	var totalAuctions int64
+	var activeAuctions int64
+	var totalBids int64
+	var totalUsers int64
+
+	// 拍卖总数
+	r.db.Model(&model.Auction{}).Count(&totalAuctions)
+
+	// 活跃拍卖数
+	r.db.Model(&model.Auction{}).Where("status = ?", model.AuctionStatusValues.Active).Count(&activeAuctions)
+
+	// 出价总数
+	r.db.Model(&model.Bid{}).Count(&totalBids)
+
+	// 独立出价者数量
+	r.db.Model(&model.Bid{}).Distinct("bidder").Count(&totalUsers)
+
+	return map[string]interface{}{
+		"totalAuctions":  totalAuctions,
+		"activeAuctions": activeAuctions,
+		"totalBids":     totalBids,
+		"totalUsers":    totalUsers,
+	}, nil
+}

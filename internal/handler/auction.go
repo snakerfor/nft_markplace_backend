@@ -129,3 +129,15 @@ func toBidResponses(bids []model.Bid) []model.BidResponse {
 	}
 	return responses
 }
+
+// GetStats 获取平台统计数据
+// GET /api/v1/auctions/stats
+func (h *AuctionHandler) GetStats(c *gin.Context) {
+	stats, err := h.auctionSvc.GetStats()
+	if err != nil {
+		response.Error(c, 500, "Failed to fetch stats")
+		return
+	}
+
+	response.Success(c, stats)
+}

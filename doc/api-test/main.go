@@ -77,6 +77,10 @@ func main() {
 	Test("拍卖1出价历史-默认", "/auctions/3/bids")
 	Test("拍卖1出价历史-分页", "/auctions/3/bids?page=1&limit=5")
 
+	// 3. 平台统计数据
+	fmt.Println("--- Stats ---")
+	Test("平台统计", "/auctions/stats")
+
 	// 汇总
 	fmt.Println("========================================")
 	fmt.Printf("  Results: ✅ %d passed, ❌ %d failed\n", passed, failed)
